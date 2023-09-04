@@ -195,7 +195,7 @@ module ActionController #:nodoc:
     # is no +:tablet+ variant declared, the +:phone+ variant will be used:
     #
     #   respond_to do |format|
-    #     format.html.non
+    #     format.html.none
     #     format.html.phone # this gets rendered
     #   end
     def respond_to(*mimes)
