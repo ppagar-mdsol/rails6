@@ -195,31 +195,32 @@ module ActionController #:nodoc:
     # is no +:tablet+ variant declared, the +:phone+ variant will be used:
     #
     #   respond_to do |format|
-    #     format.html.none
+    #     format.html.non
     #     format.html.phone # this gets rendered
     #   end
     def respond_to(*mimes)
       # Log the mimes input
-      logger.info "CUSTUM_RAILS  Mimes input: #{mimes}"
+      logger.info "CUSTOM_RAILS  Mimes input: #{mimes}"
+      puts "CUSTOM_RAILS_6  Mimes input: #{mimes}"
       raise ArgumentError, "respond_to takes either types or a block, never both" if mimes.any? && block_given?
       
       collector = Collector.new(mimes, request.variant)
       # Log the variant information
-      logger.info "CUSTUM_RAILS Variant: #{request.variant}"
+      puts "CUSTOM_RAILS Variant: #{request.variant}"
       yield collector if block_given?
 
       if format = collector.negotiate_format(request)
         # Log the negotiated response format
-        logger.info "CUSTUM_RAILS Negotiated Format: #{format}"
+        puts "CUSTOM_RAILS Negotiated Format: #{format}"
         if media_type && media_type != format
-          logger.info "CUSTUM_RAILS RespondToMismatchError"
+          puts "CUSTOM_RAILS RespondToMismatchError"
           raise ActionController::RespondToMismatchError
         end
         _process_format(format)
         _set_rendered_content_type format
         response = collector.response
         # Log the response information
-        logger.info "CUSTUM_RAILS Response: #{response}"
+        puts "CUSTOM_RAILS Response: #{response}"
         response.call if response
       else
         raise ActionController::UnknownFormat
@@ -280,27 +281,27 @@ module ActionController #:nodoc:
       def response
         response = @responses.fetch(format, @responses[Mime::ALL])
         #Log the response information
-        logger.info "CUSTUM_RAILS Response: #{response.inspect}"
+        puts "CUSTOM_RAILS Response: #{response.inspect}"
         if response.is_a?(VariantCollector) # `format.html.phone` - variant inline syntax
-          logger.info "CUSTUM_RAILS Response.variant: #{response.variant}"
+          puts "CUSTOM_RAILS Response.variant: #{response.variant}"
           response.variant
         elsif response.nil? || response.arity == 0 # `format.html` - just a format, call its block
-          logger.info "CUSTUM_RAILS Response.variant: #{response}"
+          puts "CUSTOM_RAILS Response.variant: #{response}"
           response
         else # `format.html{ |variant| variant.phone }` - variant block syntax
           variant_collector = VariantCollector.new(@variant)
           response.call(variant_collector) # call format block with variants collector
           variant_collector.variant
           #Log the variant collector information
-          logger.info "CUSTUM_RAILS Variant: #{variant_collector.variant}"
+          puts "CUSTOM_RAILS Variant: #{variant_collector.variant}"
         end
       end
 
       def negotiate_format(request)
-        logger.info "CUSTUM_RAILS negotiate_format request: #{request}"
-        logger.info "CUSTUM_RAILS negotiate_format responses.keys: #{@responses.keys}"
+        puts "CUSTOM_RAILS negotiate_format request: #{request}"
+        puts "CUSTOM_RAILS negotiate_format responses.keys: #{@responses.keys}"
         @format = request.negotiate_mime(@responses.keys)
-        logger.info "CUSTUM_RAILS negotiate_format @format: #{@format}"
+        puts "CUSTOM_RAILS negotiate_format @format: #{@format}"
       end
 
       class VariantCollector #:nodoc:
@@ -330,7 +331,7 @@ module ActionController #:nodoc:
           else
             @variants[variant_key]
             #Log the variant information
-            logger.info "CUSTUM_RAILS variant: #{variant.inspect}"
+            puts "CUSTOM_RAILS variant: #{variant.inspect}"
           end
         end
 
